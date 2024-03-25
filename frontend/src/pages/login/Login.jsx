@@ -1,8 +1,20 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import useLogin from "../../hooks/useLogin";
 
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const { 
+        loading,
+        login
+    } = useLogin();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await login(username, password)
+    }
+
   return (
       <div className='flex flex-col items-center justify-center min-w-96 mx-auto'>
           <div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
@@ -12,7 +24,7 @@ const Login = () => {
               </h1>
 
 
-              <form>
+              <form onSubmit={handleSubmit}>
                   <div className="my-4">
                       <label>
                           <span className='text-sm text-[#333] font-medium'>Username</span>
@@ -38,14 +50,16 @@ const Login = () => {
                           onChange={(e) => setPassword(e.target.value)}
                       />
                   </div>
-                  <a href='/signup' className='text-sm  hover:underline hover:text-blue-600 mt-2 inline-block'>
+                  <Link to='/signup' className='text-sm  hover:underline hover:text-blue-600 mt-2 inline-block'>
                       {"Don't"} have an account?
-                  </a>
+                  </Link>
 
                   <div>
-                      <button className='btn btn-block btn-sm mt-2' >
-                          {/* {loading ? <span className='loading loading-spinner '></span> : "Login"} */}
-                          Login
+                      <button 
+                      className='btn btn-block btn-sm mt-2' 
+                      disabled={loading}
+                      >
+                          {loading ? <span className='loading loading-spinner '></span> : "Login"}
                       </button>
                   </div>
               </form>
