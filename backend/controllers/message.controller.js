@@ -1,5 +1,6 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 export const sendMessage = async (req, res) => {
     try {
@@ -32,6 +33,18 @@ export const sendMessage = async (req, res) => {
 
         // but this will run in parallel 
         await Promise.all([conversation.save(), newMessage.save()]);
+
+        // SOCKET FUNCTIONALITY 
+        // --- checking if user is online 
+        // --- if online then sending newMessage to that user 
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if(receiverSocketId){
+            // so if it is online, emit newMessage event to that specific user
+            // io.to(id) is used to emit events to specific userId, but io.emit is used to emit events to all users
+            io.to(receiverSocketId).emit("newMessage", newMessage);
+
+            // messages are now emmitted, now you need to listen from frontend 
+        }
 
         res.status(201).json(newMessage)
     } catch (error) {
